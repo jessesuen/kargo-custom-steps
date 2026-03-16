@@ -1,0 +1,12 @@
+apiVersion: ee.kargo.akuity.io/v1alpha1
+kind: CustomPromotionStep
+metadata:
+  name: conftest
+spec:
+  image: openpolicyagent/conftest:${{ config.version ?? v0.67.0}}
+  command:
+  - /usr/local/bin/conftest
+  - test
+  - ${{ config.path }}
+  - --policy
+  - ${{ config.policyPath }}

@@ -1,0 +1,113 @@
+apiVersion: kargo.akuity.io/v1alpha1
+kind: Stage
+metadata:
+  name: dev
+  namespace: custom-steps
+  annotations:
+    kargo.akuity.io/color: green
+    kargo.akuity.io/argocd-context: '[{"name":"custom-steps-dev","namespace":"argocd"}]'
+spec:
+  requestedFreight:
+  - origin:
+      kind: Warehouse
+      name: nginx
+    sources:
+      direct: true
+  - origin:
+      kind: Warehouse
+      name: vulhub-nginx
+    sources:
+      direct: true
+  promotionTemplate:
+    spec:
+      steps:
+      - task:
+          name: promote
+
+---
+apiVersion: kargo.akuity.io/v1alpha1
+kind: Stage
+metadata:
+  name: staging
+  namespace: custom-steps
+  annotations:
+    kargo.akuity.io/color: yellow
+    kargo.akuity.io/argocd-context: '[{"name":"custom-steps-staging","namespace":"argocd"}]'
+spec:
+  requestedFreight:
+  - origin:
+      kind: Warehouse
+      name: nginx
+    sources:
+      stages:
+        - dev
+  - origin:
+      kind: Warehouse
+      name: vulhub-nginx
+    sources:
+      stages:
+        - dev
+
+  promotionTemplate:
+    spec:
+      steps:
+      - task:
+          name: promote
+
+---
+apiVersion: kargo.akuity.io/v1alpha1
+kind: Stage
+metadata:
+  name: prod-us
+  namespace: custom-steps
+  annotations:
+    kargo.akuity.io/color: red
+    kargo.akuity.io/argocd-context: '[{"name":"custom-steps-prod-us","namespace":"argocd"}]'
+spec:
+  requestedFreight:
+  - origin:
+      kind: Warehouse
+      name: nginx
+    sources:
+      stages:
+        - staging
+  - origin:
+      kind: Warehouse
+      name: vulhub-nginx
+    sources:
+      stages:
+        - staging
+  promotionTemplate:
+    spec:
+      steps:
+      - task:
+          name: promote
+
+---
+apiVersion: kargo.akuity.io/v1alpha1
+kind: Stage
+metadata:
+  name: prod-eu
+  namespace: custom-steps
+  annotations:
+    kargo.akuity.io/color: red
+    kargo.akuity.io/argocd-context: '[{"name":"custom-steps-prod-eu","namespace":"argocd"}]'
+spec:
+  requestedFreight:
+  - origin:
+      kind: Warehouse
+      name: nginx
+    sources:
+      stages:
+        - staging
+  - origin:
+      kind: Warehouse
+      name: vulhub-nginx
+    sources:
+      stages:
+        - staging
+  promotionTemplate:
+    spec:
+      steps:
+      - task:
+          name: promote

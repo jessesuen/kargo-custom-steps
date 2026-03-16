@@ -1,0 +1,20 @@
+{{- if .Values.postSyncJob.enabled -}}
+apiVersion: batch/v1
+kind: Job
+metadata:
+  generateName: sleep
+  namespace: {{ .Release.Namespace }}
+  annotations:
+    argocd.argoproj.io/hook: PostSync
+    argocd.argoproj.io/hook-delete-policy: HookSucceeded
+spec:
+  template:
+    spec:
+      containers:
+      - name: sleep
+        image: public.ecr.aws/docker/library/busybox:1.36.1
+        command:
+        - sleep
+        - "5"
+      restartPolicy: Never
+{{- end }}

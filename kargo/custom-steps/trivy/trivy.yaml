@@ -1,0 +1,16 @@
+apiVersion: ee.kargo.akuity.io/v1alpha1
+kind: CustomPromotionStep
+metadata:
+  name: trivy
+spec:
+  image: aquasec/trivy:${{ config.version ?? 0.69.3}}
+  command:
+  - /usr/local/bin/trivy
+  - k8s
+  - --exit-code
+  - "1"
+  - --severity
+  - HIGH,CRITICAL
+  - --report
+  - summary
+  - ${{ config.path }}

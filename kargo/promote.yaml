@@ -1,0 +1,61 @@
+apiVersion: kargo.akuity.io/v1alpha1
+kind: PromotionTask
+metadata:
+  name: promote
+  namespace: custom-steps
+spec:
+  vars:
+  - name: repoURL
+    value: https://github.com/jessesuen/kargo-custom-steps.git
+  - name: branch
+    value: main
+
+  steps:
+  - uses: git-clone
+    config:
+      repoURL: ${{ vars.repoURL }}
+      checkout:
+      - branch: ${{ vars.branch }}
+        path: ./src
+
+  - uses: compose-output
+    as: image
+    config:
+      repository: '${{ ctx.targetFreight.origin.name == "nginx" ? "public.ecr.aws/nginx/nginx" : "docker.io/vulhub/nginx" }}'
+
+  - uses: yaml-update
+    config:
+      path: ./src/env/${{ ctx.stage }}/helm/values.yaml
+      updates:
+      - key: image.tag
+        value: ${{ imageFrom( task.outputs['compose-output'].image ).RepoURL }}
+      - key: image.tag
+        value: ${{ imageFrom( task.outputs['compose-output'].image ).Tag }}
+
+  - uses: helm-template
+    config:
+      path: ./src/charts/my-chart
+      valuesFiles:
+      - ./src/charts/my-chart/${{ ctx.stage }}-values.yaml
+      outPath: ./out/manifests.yaml
+
+  - uses: conftest
+    config:
+      path: ./out
+      policyPath: ./src/policy
+  - uses: trivy
+    config:
+      path: ./out
+
+  # - uses: git-commit
+  #   as: commit
+  #   config:
+  #     path: ./src
+  #     message: |
+  #       Update ${{ ctx.stage }} to ${{ ctx.targetFreight.name }}
+
+  #       K8s Image: ${{ vars.image }}:${{ imageFrom(vars.image).Tag }}
+  #       Lambda: ${{ vars.lambda }}:${{ imageFrom(vars.lambda).Tag }}
+
+  #       Terraform Apply:
+  #       ${{ task.outputs['tf-apply'].result }}

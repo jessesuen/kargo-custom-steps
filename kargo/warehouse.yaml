@@ -1,0 +1,23 @@
+apiVersion: kargo.akuity.io/v1alpha1
+kind: Warehouse
+metadata:
+  name: nginx
+  namespace: custom-steps
+spec:
+  subscriptions:
+  - image:
+      repoURL: public.ecr.aws/nginx/nginx
+      imageSelectionStrategy: SemVer
+
+---
+
+apiVersion: kargo.akuity.io/v1alpha1
+kind: Warehouse
+metadata:
+  name: vulhub-nginx
+  namespace: custom-steps
+spec:
+  subscriptions:
+  - image:
+      repoURL: docker.io/vulhub/nginx
+      imageSelectionStrategy: SemVer
