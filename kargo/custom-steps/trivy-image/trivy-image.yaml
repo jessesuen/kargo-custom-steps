@@ -11,5 +11,6 @@ spec:
   - --severity=CRITICAL
   - --disable-telemetry
   - --skip-db-update
+  - --skip-java-db-update
   - --scanners=vuln
   - ${{ config.image }}
