@@ -3,7 +3,8 @@ kind: CustomPromotionStep
 metadata:
   name: trivy
 spec:
-  image: aquasec/trivy:${{ config.version ?? 0.69.3}}
+  #image: aquasec/trivy:${{ config.version ?? 0.69.3}}
+  image: aquasec/trivy:0.69.3
   command:
   - /usr/local/bin/trivy
   - k8s
