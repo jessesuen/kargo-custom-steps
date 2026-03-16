@@ -13,11 +13,6 @@ spec:
       name: nginx
     sources:
       direct: true
-  - origin:
-      kind: Warehouse
-      name: vulhub-nginx
-    sources:
-      direct: true
   promotionTemplate:
     spec:
       steps:
@@ -38,12 +33,6 @@ spec:
   - origin:
       kind: Warehouse
       name: nginx
-    sources:
-      stages:
-        - dev
-  - origin:
-      kind: Warehouse
-      name: vulhub-nginx
     sources:
       stages:
         - dev
@@ -71,12 +60,6 @@ spec:
     sources:
       stages:
         - staging
-  - origin:
-      kind: Warehouse
-      name: vulhub-nginx
-    sources:
-      stages:
-        - staging
   promotionTemplate:
     spec:
       steps:
@@ -97,12 +80,6 @@ spec:
   - origin:
       kind: Warehouse
       name: nginx
-    sources:
-      stages:
-        - staging
-  - origin:
-      kind: Warehouse
-      name: vulhub-nginx
     sources:
       stages:
         - staging

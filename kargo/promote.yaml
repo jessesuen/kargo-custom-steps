@@ -5,12 +5,19 @@ metadata:
   namespace: custom-steps
 spec:
   vars:
+  - name: image
+    value: ghcr.io/jessesuen/nginx
   - name: repoURL
     value: https://github.com/jessesuen/kargo-custom-steps.git
   - name: branch
     value: main
 
   steps:
+  - uses: compose-output
+    as: image
+    config:
+      image: ${{ imageFrom( vars.image ).Tag }}
+
   - uses: git-clone
     config:
       repoURL: ${{ vars.repoURL }}
@@ -18,23 +25,17 @@ spec:
       - branch: ${{ vars.branch }}
         path: ./src
 
-  - uses: compose-output
-    as: image
-    config:
-      repository: '${{ ctx.targetFreight.origin.name == "nginx" ? "public.ecr.aws/nginx/nginx" : "docker.io/vulhub/nginx" }}'
-
   - uses: yaml-update
     config:
       path: ./src/env/${{ ctx.stage }}/values.yaml
       updates:
-      - key: image.repository
-        value: ${{ imageFrom( task.outputs['compose-output'].image ).RepoURL }}
       - key: image.tag
-        value: ${{ imageFrom( task.outputs['compose-output'].image ).Tag }}
+        value: ${{ imageFrom( vars.image ).Tag }}
 
   - uses: helm-template
     config:
       path: ./src/charts/app
+      releaseName: app
       valuesFiles:
       - ./src/env/${{ ctx.stage }}/values.yaml
       outPath: ./out/manifests.yaml
@@ -43,6 +44,7 @@ spec:
     config:
       path: ./out
       policyPath: ./src/policy
+
   - uses: trivy
     config:
       path: ./out
