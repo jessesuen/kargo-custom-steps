@@ -5,9 +5,6 @@ metadata:
   namespace: {{ .Release.Namespace }}
   labels:
     {{- include "my-app.labels" . | nindent 4 }}
-    tags.datadoghq.com/env: {{ .Values.environment }}
-    tags.datadoghq.com/service: my-app
-    tags.datadoghq.com/version: {{ .Values.image.tag }}
 spec:
   replicas: {{ .Values.replicaCount }}
   selector:
@@ -21,19 +18,11 @@ spec:
       {{- end }}
       labels:
         {{- include "my-app.selectorLabels" . | nindent 8 }}
-        tags.datadoghq.com/env: {{ .Values.environment }}
-        tags.datadoghq.com/service: my-app
-        tags.datadoghq.com/version: {{ .Values.image.tag }}
     spec:
       {{- with .Values.imagePullSecrets }}
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      volumes:
-        - hostPath:
-            path: /var/run/datadog/
-          name: apmsocketpath
-
       containers:
         - name: {{ .Chart.Name }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
@@ -43,24 +32,9 @@ spec:
               containerPort: 8080
               protocol: TCP
           env:
-            - name: DD_ENV
-              valueFrom:
-                fieldRef:
-                  fieldPath: metadata.labels['tags.datadoghq.com/env']
-            - name: DD_SERVICE
-              valueFrom:
-                fieldRef:
-                  fieldPath: metadata.labels['tags.datadoghq.com/service']
-            - name: DD_VERSION
-              valueFrom:
-                fieldRef:
-                  fieldPath: metadata.labels['tags.datadoghq.com/version']
             {{- range $key, $value := .Values.env }}
             - name: {{ $key }}
               value: {{ $value | quote }}
             {{- end }}
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
-          volumeMounts:
-            - mountPath: /var/run/datadog
-              name: apmsocketpath
