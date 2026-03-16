@@ -25,18 +25,18 @@ spec:
 
   - uses: yaml-update
     config:
-      path: ./src/env/${{ ctx.stage }}/helm/values.yaml
+      path: ./src/env/${{ ctx.stage }}/values.yaml
       updates:
-      - key: image.tag
+      - key: image.repository
         value: ${{ imageFrom( task.outputs['compose-output'].image ).RepoURL }}
       - key: image.tag
         value: ${{ imageFrom( task.outputs['compose-output'].image ).Tag }}
 
   - uses: helm-template
     config:
-      path: ./src/charts/my-chart
+      path: ./src/charts/app
       valuesFiles:
-      - ./src/charts/my-chart/${{ ctx.stage }}-values.yaml
+      - ./src/env/${{ ctx.stage }}/values.yaml
       outPath: ./out/manifests.yaml
 
   - uses: conftest
