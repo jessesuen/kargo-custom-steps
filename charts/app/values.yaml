@@ -29,6 +29,8 @@ ingress:
 
 podAnnotations: {}
 
+podSecurityContext: {}
+
 resources: {}
 
 postSyncJob:
