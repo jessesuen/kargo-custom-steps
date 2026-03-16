@@ -31,6 +31,8 @@ podAnnotations: {}
 
 podSecurityContext: {}
 
+securityContext: {}
+
 resources: {}
 
 postSyncJob:
