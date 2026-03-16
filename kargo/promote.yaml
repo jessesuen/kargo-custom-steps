@@ -13,11 +13,6 @@ spec:
     value: main
 
   steps:
-  - uses: compose-output
-    as: image
-    config:
-      image: ${{ imageFrom( vars.image ).Tag }}
-
   - uses: git-clone
     config:
       repoURL: ${{ vars.repoURL }}
@@ -45,19 +40,13 @@ spec:
       path: ./out
       policyPath: ./src/policy
 
-  - uses: trivy
+  - uses: trivy-image
     config:
-      path: ./out
+      image: ${{ vars.image }}:${{ imageFrom( vars.image ).Tag }}
 
   # - uses: git-commit
   #   as: commit
   #   config:
   #     path: ./src
   #     message: |
-  #       Update ${{ ctx.stage }} to ${{ ctx.targetFreight.name }}
-
-  #       K8s Image: ${{ vars.image }}:${{ imageFrom(vars.image).Tag }}
-  #       Lambda: ${{ vars.lambda }}:${{ imageFrom(vars.lambda).Tag }}
-
-  #       Terraform Apply:
-  #       ${{ task.outputs['tf-apply'].result }}
+  #       Update ${{ ctx.stage }} to ${{ vars.image }}:${{ imageFrom(vars.image).Tag }}

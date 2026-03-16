@@ -1,0 +1,10 @@
+apiVersion: ee.kargo.akuity.io/v1alpha1
+kind: CustomPromotionStep
+metadata:
+  name: extract-images
+spec:
+  image: mikefarah/yq:4.52.4
+  command:
+  - sh
+  - -c
+  - find ./${{ config.path}} \( -name "*.yaml" -o -name "*.yml" \) -print0 | xargs -0 yq -N e '.. | select(has("image")) | .image' 2>/dev/null | xargs | sed 's/^/::kargo::out::images::/'

@@ -3,7 +3,6 @@ kind: CustomPromotionStep
 metadata:
   name: conftest
 spec:
-  #image: openpolicyagent/conftest:${{ config.version ?? v0.67.0}}
   image: openpolicyagent/conftest:v0.67.0
   command:
   - /usr/local/bin/conftest
