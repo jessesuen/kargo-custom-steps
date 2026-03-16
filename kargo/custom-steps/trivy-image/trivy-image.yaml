@@ -3,12 +3,13 @@ kind: CustomPromotionStep
 metadata:
   name: trivy-image
 spec:
-  image: aquasec/trivy:0.69.3
+  image: ghcr.io/jessesuen/trivy:0.69.3
   command:
   - trivy
   - image
   - --exit-code=1
   - --severity=CRITICAL
   - --disable-telemetry
+  - --skip-db-update
   - --scanners=vuln
   - ${{ config.image }}
