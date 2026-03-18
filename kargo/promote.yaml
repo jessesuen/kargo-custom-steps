@@ -43,9 +43,11 @@ spec:
     config:
       image: ${{ vars.image }}:${{ imageFrom( vars.image ).Tag }}
 
-  # - uses: git-commit
-  #   as: commit
-  #   config:
-  #     path: ./src
-  #     message: |
-  #       Update ${{ ctx.stage }} to ${{ vars.image }}:${{ imageFrom(vars.image).Tag }}
+  - uses: git-commit
+    config:
+      path: ./src
+      message: Update ${{ ctx.stage }} to ${{ vars.image }}:${{ imageFrom(vars.image).Tag }}
+
+  - uses: git-push
+    config:
+      path: ./out

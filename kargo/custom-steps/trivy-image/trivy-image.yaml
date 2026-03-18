@@ -7,7 +7,5 @@ spec:
   command:
   - trivy
   - image
-  - --format=template
-  - --template='{{range .}}{{range .Vulnerabilities}}{{.VulnerabilityID}} ({{.PkgName}}){{"\n"}}{{end}}{{end}}'
   - --severity=CRITICAL
   - ${{ config.image }}

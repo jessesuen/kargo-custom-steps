@@ -19,3 +19,8 @@ scan:
 
 cache:
   dir: /home/nonroot/.cache/trivy
+
+format: template
+template: |
+  {{range .}}{{range .Vulnerabilities}}{{.VulnerabilityID}} ({{.PkgName}})
+  {{end}}{{end}}
