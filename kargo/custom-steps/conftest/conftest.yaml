@@ -9,5 +9,11 @@ spec:
   - sh
   - -c
   - |
-    conftest pull https://raw.githubusercontent.com/jessesuen/kargo-custom-steps/master/policy/kubernetes.rego && \
-    conftest test ${{ config.path }}
+    set -euo pipefail
+    rm -rf /tmp/policy
+    mkdir -p /tmp/policy
+    conftest test \
+      --no-color \
+      --update=https://raw.githubusercontent.com/jessesuen/kargo-custom-steps/master/policy/kubernetes.rego \
+      --policy=/tmp/policy \
+      ${{ config.path }}
