@@ -6,14 +6,9 @@ metadata:
 spec:
   image: openpolicyagent/conftest:v0.67.0
   command:
-  - sh
-  - -c
-  - |
-    set -euo pipefail
-    rm -rf /tmp/policy
-    mkdir -p /tmp/policy
-    conftest test \
-      --no-color \
-      --update=https://raw.githubusercontent.com/jessesuen/kargo-custom-steps/master/policy/kubernetes.rego \
-      --policy=/tmp/policy \
-      ${{ config.path }}
+  - conftest
+  - test
+  - --no-color
+  - --update=https://raw.githubusercontent.com/jessesuen/kargo-custom-steps/master/policy/kubernetes.rego
+  - --policy=/tmp/policy
+  - ${{ config.path }}
