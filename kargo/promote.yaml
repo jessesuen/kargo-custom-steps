@@ -33,12 +33,11 @@ spec:
       releaseName: app
       valuesFiles:
       - ./src/env/${{ ctx.stage }}/values.yaml
-      outPath: ./out/manifests.yaml
+      outPath: ./out
 
   - uses: conftest
     config:
       path: ./out
-      policyPath: ./src/policy
 
   - uses: trivy-image
     config:

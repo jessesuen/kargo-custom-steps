@@ -1,0 +1,21 @@
+quiet: true
+
+image:
+  source:
+  - remote
+
+exit-code: 1
+
+telemetry:
+  disable: true
+
+db:
+  skip-update: true
+  skip-java-db-update: true
+
+scan:
+  scanners:
+  - vuln
+
+cache:
+  dir: /home/nonroot/.cache/trivy

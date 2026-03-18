@@ -1,3 +1,4 @@
+# Runs conftest against a set of kubernetes manifests using remote policy
 apiVersion: ee.kargo.akuity.io/v1alpha1
 kind: CustomPromotionStep
 metadata:
@@ -5,8 +6,8 @@ metadata:
 spec:
   image: openpolicyagent/conftest:v0.67.0
   command:
-  - /usr/local/bin/conftest
-  - test
-  - ${{ config.path }}
-  - --policy
-  - ${{ config.policyPath }}
+  - sh
+  - -c
+  - |
+    conftest pull https://raw.githubusercontent.com/jessesuen/kargo-custom-steps/master/policy/kubernetes.rego && \
+    conftest test ${{ config.path }}

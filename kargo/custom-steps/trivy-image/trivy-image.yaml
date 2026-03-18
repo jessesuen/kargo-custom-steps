@@ -7,11 +7,5 @@ spec:
   command:
   - trivy
   - image
-  - --image-src=remote
-  - --exit-code=1
   - --severity=CRITICAL
-  - --disable-telemetry
-  - --skip-db-update
-  - --skip-java-db-update
-  - --scanners=vuln
   - ${{ config.image }}
