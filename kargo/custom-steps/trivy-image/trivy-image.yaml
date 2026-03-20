@@ -9,3 +9,9 @@ spec:
   - image
   - --severity=CRITICAL
   - ${{ config.image }}
+  output:
+    source:
+      type: Stdout
+      format: Text
+    transform:
+      vulnerabilities: 'trim(output) == "" ? [] : split(trim(output), "\n")'

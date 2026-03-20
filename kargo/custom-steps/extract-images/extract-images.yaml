@@ -7,4 +7,12 @@ spec:
   command:
   - sh
   - -c
-  - find ./${{ config.path}} \( -name "*.yaml" -o -name "*.yml" \) -print0 | xargs -0 yq -N e '.. | select(has("image")) | .image' 2>/dev/null | xargs | sed 's/^/::kargo::out::images::/'
+  - |
+    find ./${{ config.path }} \( -name "*.yaml" -o -name "*.yml" \) -print0 \
+    | xargs -0 yq -N e '.. | select(has("image")) | .image' \
+    | sort -u \
+    | while IFS= read -r line; do echo "- $line"; done
+  output:
+    source:
+      type: Stdout
+      format: YAML

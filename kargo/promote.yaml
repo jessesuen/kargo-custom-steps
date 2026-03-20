@@ -35,6 +35,10 @@ spec:
       - ./src/env/${{ ctx.stage }}/values.yaml
       outPath: ./out
 
+  - uses: extract-images
+    config:
+      path: ./out
+
   - uses: conftest
     config:
       path: ./out

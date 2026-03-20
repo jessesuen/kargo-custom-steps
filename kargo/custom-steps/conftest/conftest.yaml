@@ -9,6 +9,11 @@ spec:
   - conftest
   - test
   - --no-color
+  - --output=json
   - --update=https://raw.githubusercontent.com/jessesuen/kargo-custom-steps/master/policy/kubernetes.rego
   - --policy=/tmp/policy
   - ${{ config.path }}
+  output:
+    source:
+      type: Stdout
+      format: JSON
