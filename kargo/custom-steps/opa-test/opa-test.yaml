@@ -1,0 +1,25 @@
+# Runs conftest against a set of kubernetes manifests using remote OPA policies
+apiVersion: ee.kargo.akuity.io/v1alpha1
+kind: CustomPromotionStep
+metadata:
+  name: opa-test
+spec:
+  image: openpolicyagent/conftest:v0.67.0
+  command:
+  - sh
+  - -c
+  - |-
+    conftest test \
+      --no-color \
+      --output=table \
+      --update=https://raw.githubusercontent.com/jessesuen/kargo-custom-steps/master/policy/kubernetes.rego \
+      --policy=/tmp/policy \
+      ${{ config.path }} \
+      > /tmp/output
+  output:
+    source:
+      type: File
+      path: /tmp/output
+      format: Text
+    transform:
+      output: split(trim(output), "\n")

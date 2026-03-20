@@ -47,20 +47,23 @@ NOTE: This feature requires the use of pod-based promotions, only available in t
 
 This repo showcases two real-world examples of custom promotion steps:
 
-* `conftest` - validate Kubernetes manifests using centrally managed OPA rules, before proceeding with promotion.
+* `opa-test` - validate Kubernetes manifests using centrally managed OPA rules, before proceeding with promotion.
 * `trivy-image` - scan the promoted image for vulnerabilities, before proceeding with promotion.
 
-### Conftest
+### Open Policy Agent Test
 
-Conftest is an open-source tool for writing and enforcing policy-as-code tests against structured configuration files (Kubernetes manifests, Dockerfiles, Terraform, etc.) using the Rego policy language.
+Open Policy Agent (OPA) is an open-source, general-purpose policy engine that allows you to
+define and enforce fine-grained authorization and compliance rules across your stack using the
+Rego policy language. For testing policies against structured configuration files (Kubernetes
+manifests, Dockerfiles, Terraform, etc.), the companion tool `conftest` can be used.
 
-This example shows how `conftest` can be used to validate Kubernetes deployment YAML against centrally managed rules.
+This example shows how `conftest` can be used to validate Kubernetes deployment YAML against centrally managed OPA rules.
 
 ```yaml
 apiVersion: ee.kargo.akuity.io/v1alpha1
 kind: CustomPromotionStep
 metadata:
-  name: conftest
+  name: opa-test
 spec:
   image: openpolicyagent/conftest:v0.67.0
   command:
@@ -72,7 +75,7 @@ spec:
   - ${{ config.path }}
 ```
 
-### Trivy
+### Trivy Image Scanning
 
 Trivy is an open-source, all-in-one security scanner that detects vulnerabilities, misconfigurations, secrets, and license issues across container images, filesystems, Git repositories, and cloud infrastructure.
 
@@ -140,7 +143,7 @@ spec:
       outPath: ./out
 
   # 4. (Custom) Validate rendered manifests against OPA policy rules
-  - uses: conftest
+  - uses: opa-test
     config:
       path: ./out
 
@@ -160,4 +163,4 @@ spec:
       path: ./out
 ```
 
-The custom steps (`conftest` and `trivy-image`) act as policy and security gates — if either fails, the promotion is blocked before any changes are committed.
+The custom steps (`opa-test` and `trivy-image`) act as policy and security gates — if either fails, the promotion is blocked before any changes are committed.

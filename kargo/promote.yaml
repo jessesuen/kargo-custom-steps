@@ -39,7 +39,7 @@ spec:
     config:
       path: ./out
 
-  - uses: conftest
+  - uses: opa-test
     config:
       path: ./out
 
