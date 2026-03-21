@@ -6,46 +6,66 @@ Custom Promotion Steps allow Kargo administrators to easily introduce new promot
 
 ## Why custom steps?
 
-While a majority of GitOps promotion workflows can be built entirely using Kargo's built-in, native steps, occasionally these may not be enough. Some use cases include:
-* deployments using bespoke, custom tools or scripts
-* interfacing with internal systems
-* adding support for additional CLI-based tools not officially supported by Kargo
+Kargo's built-in steps handle the most common GitOps promotion operations out of the box, with native integrations for Argo CD, Terraform, OCI, and Git. But every organization has unique requirements — custom security gates, internal tooling, or compliance checks that don't fit a standard mold. Custom steps make these possible.
+
+Examples of when you would use custom steps include:
+* Supply chain security verification: `cosign`, `notation`
+* Image vulnerability scanning: `grype`, `trivy`
+* Policy validation and linting: `conftest`, `kyverno`, `kubeconform`
+* Database schema migrations: `flyway`, `liquibase`
+* Infrastructure automation: `ansible`, `chef`, `puppet`
+* Bespoke tools, scripts, and internal system integrations
 
 ## How it works
 
-To define a new promotion step, it is as simple as registering a `CustomPromotionStep` resource which specifies:
-* the container `image` to run
-* the `command` to be executed in the container
-* how any inputs should be supplied to the command or environment variables
+To define a new promotion step, a `CustomPromotionStep` resource is registered which specifies:
+* The container `image` to run.
+* The `command` to be executed in the container.
+* Optional `config` inputs to pass into the command.
+* Optional `output` to collect from the result of execution.
 
 ```yaml
 apiVersion: ee.kargo.akuity.io/v1alpha1
 kind: CustomPromotionStep
 metadata:
-  name: sleep
+  name: random-number
 spec:
-  image: ubuntu
-  command: ["sh", "-c", "sleep ${{ config.sleepSeconds }}"]
-  env:
-  - name: HELLO
-    value: ${{ config.sleep }}
-
+  image: busybox:1.37.0
+  command:
+  - sh
+  - -c
+  - |
+    NUM=$(awk 'BEGIN{srand(); print int(rand() * ${{ config.range }}) + 1}')
+    echo "Generated number: $NUM"
+    echo "result=$NUM" > $KARGO_OUTPUT
+  output:
+    source:
+      # collects key=value outputs from the $KARGO_OUTPUT pipe
+      type: Pipe
 ```
 
-Once registered, the step can be used like any other kargo step.
+Once registered, the step can be used like any other kargo step. Outputs are referenced in subsequent steps via `outputs['<as>'].<key>`:
 
 ```yaml
 steps:
-- uses: sleep
+- uses: random-number
+  as: random-number
   config:
-    sleepSeconds: 10
+    range: 100
+
+- uses: yaml-update
+  config:
+    path: ./src/values.yaml
+    updates:
+    - key: num
+      value: ${{ outputs['random-number'].result }}
 ```
 
-NOTE: This feature requires the use of pod-based promotions, only available in the Akuity Platform.
+NOTE: Custom promotion steps require pod-based promotions available only on the Akuity Platform.
 
 ## Examples
 
-This repo showcases two real-world examples of custom promotion steps:
+This repository showcases two real-world examples of custom promotion steps:
 
 * `opa-test` - validate Kubernetes manifests using centrally managed OPA rules, before proceeding with promotion.
 * `trivy-image` - scan the promoted image for vulnerabilities, before proceeding with promotion.
@@ -160,7 +180,7 @@ spec:
 
   - uses: git-push
     config:
-      path: ./out
+      path: ./src
 ```
 
 The custom steps (`opa-test` and `trivy-image`) act as policy and security gates — if either fails, the promotion is blocked before any changes are committed.

@@ -13,6 +13,10 @@ spec:
     value: main
 
   steps:
+  - uses: random-number
+    config:
+      range: 100
+
   - uses: git-clone
     config:
       repoURL: ${{ vars.repoURL }}

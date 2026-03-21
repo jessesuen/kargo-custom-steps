@@ -1,0 +1,17 @@
+apiVersion: ee.kargo.akuity.io/v1alpha1
+kind: CustomPromotionStep
+metadata:
+  name: random-number
+spec:
+  image: busybox:1.37.0
+  command:
+  - sh
+  - -c
+  - |
+    NUM=$(awk 'BEGIN{srand(); print int(rand() * ${{ config.range }}) + 1}')
+    echo "Generated number: $NUM"
+    echo "result=$NUM" > $KARGO_OUTPUT
+  output:
+    source:
+      # collects key=value outputs from the $KARGO_OUTPUT pipe
+      type: Pipe
