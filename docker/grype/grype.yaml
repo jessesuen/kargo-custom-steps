@@ -1,0 +1,14 @@
+log:
+  quiet: true
+
+# The grype database is updated at build time, so we disable auto-updates and age validation.
+# 
+db:
+  auto-update: false
+  validate-age: false
+  cache-dir: /home/nonroot/.cache/grype/db
+
+output: [template]
+output-template-file: /etc/grype/grype.tmpl
+
+fail-on-severity: critical

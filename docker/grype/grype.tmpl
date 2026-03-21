@@ -1,0 +1,2 @@
+{{range .Matches}}{{if eq .Vulnerability.Severity "Critical"}}{{.Vulnerability.ID}} ({{.Artifact.Name}})
+{{end}}{{end}}

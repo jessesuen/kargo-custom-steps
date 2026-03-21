@@ -47,6 +47,8 @@ spec:
     config:
       path: ./out
 
+  # Can use grype or trivy interchangeably
+  # - uses: grype
   - uses: trivy-image
     config:
       image: ${{ vars.image }}:${{ imageFrom( vars.image ).Tag }}
