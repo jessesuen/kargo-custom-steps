@@ -1,0 +1,28 @@
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: custom-steps
+  namespace: argocd
+spec:
+  generators:
+  - git:
+      repoURL: https://github.com/jessesuen/kargo-custom-steps.git
+      revision: HEAD
+      directories:
+      - path: env/*
+  template:
+    metadata:
+      name: custom-steps-{{path.basename}}
+      annotations:
+        kargo.akuity.io/authorized-stage: custom-steps:{{path.basename}}
+    spec:
+      destination:
+        namespace: custom-steps-{{path.basename}}
+        name: demo
+      project: custom-steps
+      source:
+        path: charts/app
+        repoURL: https://github.com/jessesuen/kargo-custom-steps.git
+        helm:
+          valueFiles:
+          - "/env/{{path.basename}}/values.yaml"

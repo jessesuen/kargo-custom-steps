@@ -36,4 +36,4 @@ securityContext: {}
 resources: {}
 
 postSyncJob:
-  enabled: true
+  enabled: false

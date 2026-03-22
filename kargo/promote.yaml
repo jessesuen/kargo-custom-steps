@@ -13,10 +13,6 @@ spec:
     value: main
 
   steps:
-  - uses: random-number
-    config:
-      range: 100
-
   - uses: git-clone
     config:
       repoURL: ${{ vars.repoURL }}
@@ -39,10 +35,6 @@ spec:
       - ./src/env/${{ ctx.stage }}/values.yaml
       outPath: ./out
 
-  - uses: extract-images
-    config:
-      path: ./out
-
   - uses: opa-test
     config:
       path: ./out
@@ -61,3 +53,8 @@ spec:
   - uses: git-push
     config:
       path: ./src
+
+  - uses: argocd-update
+    config:
+      apps:
+      - name: custom-steps-${{ ctx.stage }}
